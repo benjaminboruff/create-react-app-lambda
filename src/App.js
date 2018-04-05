@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import fetch from 'node-fetch';
 import './App.css';
 class SlackMessage extends Component {
   constructor(props) {
