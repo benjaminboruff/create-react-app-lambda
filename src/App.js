@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+import netlifyIdentity from "netlify-identity-widget"
 import './App.css';
+
 class SlackMessage extends Component {
   constructor(props) {
     super(props);
@@ -22,9 +24,17 @@ class SlackMessage extends Component {
         return response.text().then(err => {throw(err)});
       }
     })
-    .then(() => this.setState({loading: false, text: null, success: true, error: null}))
+    .then(() => this.setState({loading: false, text: '', success: true, error: null}))
     .catch(err => this.setState({loading: false, success: false, error: err.toString()}))
   }
+
+    componentDidMount() {
+      netlifyIdentity.init();
+    }
+    handleIdentity = (e) => {
+      e.preventDefault();
+      netlifyIdentity.open();
+    }
 
   render() {
     const {loading, text, error, success} = this.state;
@@ -49,6 +59,7 @@ class App extends Component {
         <header className="App-header">
           <h1 className="App-title">Slack Messenger</h1>
         </header>
+        <p><a href="#" onClick={this.handleIdentity}>User Status</a></p>
         <SlackMessage/>
       </div>
     );

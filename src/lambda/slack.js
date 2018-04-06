@@ -1,4 +1,5 @@
 import  fetch from 'node-fetch';
+
 const slackURL = process.env.SLACK_WEBHOOK_URL;
 export function handler(event, context, callback) {
   if (event.httpMethod !== "POST") {
