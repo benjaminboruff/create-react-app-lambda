@@ -7,9 +7,11 @@ class SlackMessage extends Component {
     super(props);
     this.state = {loading: false, text: '', error: null, success: false};
   }
+
   handleText = (e) => {
     this.setState({text: e.target.value});
   };
+
   handleSubmit = (e) => {
     e.preventDefault();
     this.setState({loading: true});
@@ -36,7 +38,7 @@ class SlackMessage extends Component {
     const headers = { "Content-Type": "application/json" };
     if (netlifyIdentity.currentUser()) {
       return netlifyIdentity.currentUser().jwt().then((token) => {
-        return { ...headers, "Authorization": `Bearer ${token}` };
+        return { ...headers, Authorization: `Bearer ${token}` };
       })
     }
     return Promise.resolve(headers);
@@ -60,6 +62,7 @@ class SlackMessage extends Component {
 }
 
 class App extends Component {
+  
   componentDidMount() {
     netlifyIdentity.init();
   }

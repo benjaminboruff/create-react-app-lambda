@@ -8,7 +8,7 @@ export function handler(event, context, callback) {
 
   const claims = context.clientContext && context.clientContext.user;
   if (process.env.production && !claims) {
-    return callback(null, { statusCode: 401, body: "You must be signed in to call this function" });
+    return callback(null, { statusCode: 401, body: "You must be signed in to send a message" });
   }
 
   try {
@@ -18,7 +18,7 @@ export function handler(event, context, callback) {
       body: JSON.stringify({ 
         text: payload.text,
         attachments: [
-          { "text": claims ? `From ${claims.email}` : "test@example.com" }
+          { "text": claims ? `From ${claims.email}` : "From local@development" }
         ] 
       })
     }).then(() => {
