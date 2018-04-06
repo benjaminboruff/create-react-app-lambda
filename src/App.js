@@ -17,6 +17,7 @@ class SlackMessage extends Component {
     this.generateHeaders().then((headers) => {
       fetch('/.netlify/functions/slack', {
         method: "POST",
+        headers,
         body: JSON.stringify({
           text: this.state.text
         })
@@ -31,17 +32,15 @@ class SlackMessage extends Component {
     });
   }
 
-
-
-    generateHeaders() {
-      const headers = { "Content-Type": "application/json" };
-      if (netlifyIdentity.currentUser()) {
-        return netlifyIdentity.currentUser().jwt().then((token) => {
-          return { ...headers, Authorization: `Bearer ${token}` };
-        })
-      }
-      return Promise.resolve(headers);
+  generateHeaders() {
+    const headers = { "Content-Type": "application/json" };
+    if (netlifyIdentity.currentUser()) {
+      return netlifyIdentity.currentUser().jwt().then((token) => {
+        return { ...headers, "Authorization": `Bearer ${token}` };
+      })
     }
+    return Promise.resolve(headers);
+  }
 
   render() {
     const {loading, text, error, success} = this.state;
@@ -69,6 +68,7 @@ class App extends Component {
     e.preventDefault();
     netlifyIdentity.open();
   }
+
   render() {
     return (
       <div className="App">
