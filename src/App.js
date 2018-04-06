@@ -13,27 +13,34 @@ class SlackMessage extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     this.setState({loading: true});
-    fetch('/.netlify/functions/slack', {
-      method: "POST",
-      body: JSON.stringify({
-        text: this.state.text
+    // Make sure we use the right headers when sending to slack.js
+    this.generateHeaders().then((headers) => {
+      fetch('/.netlify/functions/slack', {
+        method: "POST",
+        body: JSON.stringify({
+          text: this.state.text
+        })
       })
-    })
-    .then(response => {
-      if (!response.ok) {
-        return response.text().then(err => {throw(err)});
-      }
-    })
-    .then(() => this.setState({loading: false, text: '', success: true, error: null}))
-    .catch(err => this.setState({loading: false, success: false, error: err.toString()}))
+      .then(response => {
+        if (!response.ok) {
+          return response.text().then(err => {throw(err)});
+        }
+      })
+      .then(() => this.setState({loading: false, text: '', success: true, error: null}))
+      .catch(err => this.setState({loading: false, success: false, error: err.toString()}))
+    });
   }
 
-    componentDidMount() {
-      netlifyIdentity.init();
-    }
-    handleIdentity = (e) => {
-      e.preventDefault();
-      netlifyIdentity.open();
+
+
+    generateHeaders() {
+      const headers = { "Content-Type": "application/json" };
+      if (netlifyIdentity.currentUser()) {
+        return netlifyIdentity.currentUser().jwt().then((token) => {
+          return { ...headers, Authorization: `Bearer ${token}` };
+        })
+      }
+      return Promise.resolve(headers);
     }
 
   render() {
@@ -52,7 +59,16 @@ class SlackMessage extends Component {
     </form>;
   }
 }
+
 class App extends Component {
+  componentDidMount() {
+    netlifyIdentity.init();
+  }
+
+  handleIdentity = (e) => {
+    e.preventDefault();
+    netlifyIdentity.open();
+  }
   render() {
     return (
       <div className="App">
@@ -65,4 +81,5 @@ class App extends Component {
     );
   }
 }
+
 export default App;
